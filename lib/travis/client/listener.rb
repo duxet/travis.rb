@@ -94,6 +94,8 @@ module Travis
         @socket    = Socket.new(pusher_key, pusher_options)
         @channels  = []
         @callbacks = []
+
+        socket.connect(true)
       end
 
       def subscribe(*entities)
@@ -120,7 +122,6 @@ module Travis
         @channels.map! { |c| c.start_with?('private-') ? c : "private-#{c}" } if session.private_channels?
         @channels.uniq.each { |c| socket.subscribe(c) }
         @callbacks.each { |e,b| socket.bind(e) { |d| dispatch(e, d, &b) } }
-        socket.connect
       end
 
       def disconnect
